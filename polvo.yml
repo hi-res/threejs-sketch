@@ -1,0 +1,19 @@
+server:
+  root: ./public
+  port: 3000
+
+input:
+  - ./src
+
+output:
+  js: ./public/js/app.js
+  css: ./public/css/app.css
+
+alias:
+  app: ./src/coffee
+
+minify:
+  js: true
+  css: true
+
+boot: ./src/coffee/app
