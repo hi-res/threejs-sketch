@@ -16,6 +16,7 @@
 	<body>
 
 		<script src="js/three.min.js"></script>
+		<script src="js/dat.gui.js"></script>
 		<script src="js/TrackballControls.js"></script>
 
 		<script type="text/javascript">
@@ -65,6 +66,32 @@
 			controls.staticMoving 		  = true;
 			controls.dynamicDampingFactor = 0.5;
 
+			/*
+				GUI Controls
+			*/
+
+			var gui = new dat.GUI();
+			gui.width = 350;
+
+			// Adding a resources folder for useful links
+			var resourcesFolder = gui.addFolder('Resources');
+			var resources = {
+				threejsintro: function(){
+					window.open('http://davidscottlyons.com/threejs/presentations/frontporch14/#slide-0');
+				},
+				threejsdocs: function(){
+					window.open('http://threejs.org/docs');
+				},
+				datgui: function(){
+					window.open('http://workshop.chromeexperiments.com/examples/gui');
+				}
+			};
+
+			resourcesFolder.add(resources, 'threejsintro').name('threejs introduction');
+			resourcesFolder.add(resources, 'threejsdocs').name('threejs documentation');
+			resourcesFolder.add(resources, 'datgui').name('datgui documentation');
+			resourcesFolder.open();
+
 			/* 
 				Events
 			*/
@@ -82,13 +109,53 @@
 			var geometry = new THREE.BoxGeometry(10,10,10);
 			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 			var cube = new THREE.Mesh( geometry, material );
+			cube.name = 'cube';
 			scene.add( cube );
 
+			// Add controls to translate the cubes position
+			var bounds = 100;
+
+			gui.add(cube, 'name').name('object');
+			gui.add(cube.position, 'x', -bounds, bounds);
+			gui.add(cube.position, 'y', -bounds, bounds);
+			gui.add(cube.position, 'z', -bounds, bounds);
+
+			// Add multiple spheres with a loop
+
+			var spheres = [];
+			var number_of_spheres = 5;
+
+			for (var i = number_of_spheres; i >= 0; i--) {
+
+				// Random hex color
+				var sphereColor    = new THREE.Color(Math.random(), 0.5, 0.7);
+
+				var sphereGeometry = new THREE.SphereGeometry( 5, 16, 16 );
+				var sphereMaterial = new THREE.MeshBasicMaterial( {color: sphereColor, wireframe : false} );
+				var sphereMesh 	   = new THREE.Mesh(sphereGeometry, sphereMaterial);
+
+				// Random x, y, z position from -10 -> 10
+
+				var x = -50 + Math.random() * 100;
+				var y = -50 + Math.random() * 100;
+				var z = -50 + Math.random() * 100;
+
+				sphereMesh.position.set(x, y, z);
+
+				scene.add(sphereMesh);
+
+				spheres[i] = sphereMesh;
+			};
 
 			/* 
 				Update and render the scene
 			*/
+
+			var clock = new THREE.Clock(true);
+
 			function render() {
+
+				var time = clock.getElapsedTime();
 
 				// Update objects
 				cube.rotation.x += 0.01;
